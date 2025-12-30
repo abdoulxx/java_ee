@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         id="WebApp_ID"
+         version="4.0">
+
+  <display-name>Gestion Etudiants - Application Java EE</display-name>
+
+  <description>
+    Application de gestion des étudiants et des notes
+    Master 1 GI/MIAGE - IUA
+  </description>
+
+  <!-- Page d'accueil par défaut -->
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+  <!-- Configuration de l'encodage UTF-8 -->
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>com.iua.gestionetudiants.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- Servlet de gestion des étudiants -->
+  <servlet>
+    <servlet-name>EtudiantServlet</servlet-name>
+    <servlet-class>com.iua.gestionetudiants.controller.EtudiantServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EtudiantServlet</servlet-name>
+    <url-pattern>/etudiants</url-pattern>
+  </servlet-mapping>
+
+  <!-- Servlet de gestion des notes -->
+  <servlet>
+    <servlet-name>NoteServlet</servlet-name>
+    <servlet-class>com.iua.gestionetudiants.controller.NoteServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>NoteServlet</servlet-name>
+    <url-pattern>/notes</url-pattern>
+  </servlet-mapping>
+
+  <!-- Configuration JAX-RS pour les services REST -->
+  <servlet>
+    <servlet-name>JerseyServlet</servlet-name>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>com.iua.gestionetudiants.rest</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.server.provider.classnames</param-name>
+      <param-value>org.glassfish.jersey.jackson.JacksonFeature</param-value>
+    </init-param>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>JerseyServlet</servlet-name>
+    <url-pattern>/api/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Gestion des erreurs -->
+  <error-page>
+    <error-code>404</error-code>
+    <location>/jsp/error404.jsp</location>
+  </error-page>
+
+  <error-page>
+    <error-code>500</error-code>
+    <location>/jsp/error500.jsp</location>
+  </error-page>
+
+  <!-- Configuration de session -->
+  <session-config>
+    <session-timeout>30</session-timeout>
+    <cookie-config>
+      <http-only>true</http-only>
+    </cookie-config>
+  </session-config>
+
+</web-app>

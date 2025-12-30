@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+
+    <!-- Unité de persistance pour la gestion des étudiants -->
+    <persistence-unit name="GestionEtudiantsPU" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Provider JPA : Hibernate -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Classes d'entités -->
+        <class>com.iua.gestionetudiants.model.Etudiant</class>
+        <class>com.iua.gestionetudiants.model.Note</class>
+
+        <properties>
+            <!-- Configuration de la base de données MySQL -->
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/gestion_etudiants?createDatabaseIfNotExist=true&amp;useSSL=false&amp;serverTimezone=UTC"/>
+            <property name="javax.persistence.jdbc.user" value="root"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+
+            <!-- Dialecte Hibernate pour MySQL -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+
+            <!-- Gestion automatique du schéma -->
+            <!-- update : met à jour le schéma sans supprimer les données -->
+            <!-- create : supprime et recrée les tables à chaque démarrage -->
+            <!-- create-drop : crée au démarrage et supprime à l'arrêt -->
+            <!-- validate : valide le schéma sans le modifier -->
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- Affichage des requêtes SQL dans la console -->
+            <property name="hibernate.show_sql" value="true"/>
+
+            <!-- Formatage des requêtes SQL pour meilleure lisibilité -->
+            <property name="hibernate.format_sql" value="true"/>
+
+            <!-- Affichage des commentaires dans les requêtes SQL -->
+            <property name="hibernate.use_sql_comments" value="true"/>
+
+            <!-- Gestion du pool de connexions -->
+            <property name="hibernate.connection.pool_size" value="10"/>
+
+            <!-- Encodage UTF-8 -->
+            <property name="hibernate.connection.CharSet" value="utf8"/>
+            <property name="hibernate.connection.characterEncoding" value="utf8"/>
+            <property name="hibernate.connection.useUnicode" value="true"/>
+
+            <!-- Cache de second niveau (optionnel) -->
+            <property name="hibernate.cache.use_second_level_cache" value="false"/>
+            <property name="hibernate.cache.use_query_cache" value="false"/>
+
+            <!-- Statistiques Hibernate (pour développement) -->
+            <property name="hibernate.generate_statistics" value="true"/>
+        </properties>
+
+    </persistence-unit>
+
+</persistence>
