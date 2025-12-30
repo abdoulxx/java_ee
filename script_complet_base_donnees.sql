@@ -1,16 +1,4 @@
 -- ===============================================================================
--- SCRIPT COMPLET - BASE DE DONNÉES GESTION ÉTUDIANTS
--- Application Java EE - Master 1 GI/MIAGE - IUA 2025
--- ===============================================================================
--- Ce script crée la base de données complète avec:
--- - Création de la base de données
--- - Création des tables (etudiants, notes)
--- - Insertion des étudiants Master 1 GI/MIAGE 2024-2025
--- - Insertion des notes pour démonstration
--- - Création des vues et procédures stockées
--- ===============================================================================
-
--- ===============================================================================
 -- 1. SUPPRESSION ET CRÉATION DE LA BASE DE DONNÉES
 -- ===============================================================================
 
