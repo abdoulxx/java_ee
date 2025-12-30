@@ -1,89 +1,92 @@
-package com.iua.gestionetudiants.controller;
+package com.iua.gestionetudiants.controller;  // Package pour les contrôleurs (Servlets)
 
-import com.iua.gestionetudiants.model.Etudiant;
-import com.iua.gestionetudiants.service.EtudiantService;
+import com.iua.gestionetudiants.model.Etudiant;  // Import de l'entité Etudiant
+import com.iua.gestionetudiants.service.EtudiantService;  // Import du service métier
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import javax.servlet.ServletException;  // Exception servlet
+import javax.servlet.http.HttpServlet;  // Classe de base pour les servlets HTTP
+import javax.servlet.http.HttpServletRequest;  // Représente la requête HTTP
+import javax.servlet.http.HttpServletResponse;  // Représente la réponse HTTP
+import java.io.IOException;  // Exception d'entrée/sortie
+import java.text.ParseException;  // Exception de parsing de date
+import java.text.SimpleDateFormat;  // Formateur de dates
+import java.util.Date;  // Type Date
+import java.util.List;  // Type List
 
 /**
  * Servlet contrôleur pour la gestion des étudiants
- * Couche Contrôleur - Gestion des requêtes HTTP
+ * Couche Contrôleur (MVC) - Gestion des requêtes HTTP
+ * URL mappée dans web.xml: /etudiants
  */
-public class EtudiantServlet extends HttpServlet {
+public class EtudiantServlet extends HttpServlet {  // Hérite de HttpServlet
 
-    private static final long serialVersionUID = 1L;
-    private EtudiantService etudiantService;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static final long serialVersionUID = 1L;  // Identifiant de version
+    private EtudiantService etudiantService;  // Service pour la logique métier
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  // Format de date HTML5
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-        etudiantService = new EtudiantService();
+    public void init() throws ServletException {  // Méthode d'initialisation du servlet
+        super.init();  // Appelle l'init parent
+        etudiantService = new EtudiantService();  // Crée une instance du service
     }
 
     /**
-     * Gestion des requêtes GET
-     * - Afficher la liste des étudiants
-     * - Afficher le formulaire d'ajout
-     * - Afficher le formulaire de modification
-     * - Afficher les détails d'un étudiant
+     * Gestion des requêtes GET (affichage)
+     * URLs possibles:
+     * - /etudiants → liste
+     * - /etudiants?action=ajouter → formulaire d'ajout
+     * - /etudiants?action=modifier&id=1 → formulaire de modification
+     * - /etudiants?action=details&id=1 → détails d'un étudiant
+     * - /etudiants?action=supprimer&id=1 → suppression
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+        String action = request.getParameter("action");  // Récupère le paramètre action de l'URL
 
         try {
-            if (action == null || action.equals("liste")) {
-                listerEtudiants(request, response);
-            } else if (action.equals("ajouter")) {
-                afficherFormulaireAjout(request, response);
-            } else if (action.equals("modifier")) {
-                afficherFormulaireModification(request, response);
-            } else if (action.equals("details")) {
-                afficherDetailsEtudiant(request, response);
-            } else if (action.equals("supprimer")) {
-                supprimerEtudiant(request, response);
-            } else {
-                listerEtudiants(request, response);
+            if (action == null || action.equals("liste")) {  // Si pas d'action ou action=liste
+                listerEtudiants(request, response);  // Affiche la liste
+            } else if (action.equals("ajouter")) {  // Si action=ajouter
+                afficherFormulaireAjout(request, response);  // Affiche formulaire d'ajout
+            } else if (action.equals("modifier")) {  // Si action=modifier
+                afficherFormulaireModification(request, response);  // Affiche formulaire de modification
+            } else if (action.equals("details")) {  // Si action=details
+                afficherDetailsEtudiant(request, response);  // Affiche les détails
+            } else if (action.equals("supprimer")) {  // Si action=supprimer
+                supprimerEtudiant(request, response);  // Supprime l'étudiant
+            } else {  // Action inconnue
+                listerEtudiants(request, response);  // Affiche la liste par défaut
             }
-        } catch (Exception e) {
-            request.setAttribute("erreur", e.getMessage());
-            request.getRequestDispatcher("/jsp/erreur.jsp").forward(request, response);
+        } catch (Exception e) {  // Si une erreur se produit
+            request.setAttribute("erreur", e.getMessage());  // Stocke le message d'erreur
+            request.getRequestDispatcher("/jsp/erreur.jsp").forward(request, response);  // Affiche la page d'erreur
         }
     }
 
     /**
-     * Gestion des requêtes POST
-     * - Créer un étudiant
-     * - Modifier un étudiant
+     * Gestion des requêtes POST (soumission de formulaire)
+     * - POST /etudiants?action=creer → Créer un étudiant
+     * - POST /etudiants?action=update → Modifier un étudiant
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = request.getParameter("action");
+        String action = request.getParameter("action");  // Récupère le paramètre action
 
         try {
-            if (action != null && action.equals("creer")) {
-                creerEtudiant(request, response);
-            } else if (action != null && action.equals("update")) {
-                modifierEtudiant(request, response);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/etudiants");
+            if (action != null && action.equals("creer")) {  // Si action=creer
+                creerEtudiant(request, response);  // Crée un nouvel étudiant
+            } else if (action != null && action.equals("update")) {  // Si action=update
+                modifierEtudiant(request, response);  // Modifie l'étudiant existant
+            } else {  // Action inconnue
+                response.sendRedirect(request.getContextPath() + "/etudiants");  // Redirige vers la liste
             }
-        } catch (Exception e) {
-            request.setAttribute("erreur", e.getMessage());
-            request.getRequestDispatcher("/jsp/erreur.jsp").forward(request, response);
+        } catch (Exception e) {  // Si une erreur se produit
+            request.setAttribute("erreur", e.getMessage());  // Stocke le message d'erreur
+            request.getRequestDispatcher("/jsp/erreur.jsp").forward(request, response);  // Affiche la page d'erreur
         }
     }
 
