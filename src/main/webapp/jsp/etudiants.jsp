@@ -11,6 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
@@ -38,6 +41,28 @@
             color: white;
             padding: 2rem 0;
             margin-top: 4rem;
+        }
+        /* DataTables Custom Styling */
+        div.dataTables_wrapper div.dataTables_length select,
+        div.dataTables_wrapper div.dataTables_filter input {
+            margin: 0 0.5rem;
+        }
+        .dt-buttons {
+            margin-bottom: 1rem;
+        }
+        .dt-button {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+            border: none !important;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            margin-right: 0.5rem;
+        }
+        .dt-button:hover {
+            opacity: 0.9;
+        }
+        table.dataTable thead th {
+            border-bottom: 2px solid #0d6efd;
         }
     </style>
 </head>
@@ -97,33 +122,14 @@
             </div>
         </c:if>
 
-        <!-- Search and Add -->
+        <!-- Action Buttons -->
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8 mb-3 mb-md-0">
-                        <form action="${pageContext.request.contextPath}/etudiants" method="get">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text"
-                                       name="recherche"
-                                       class="form-control"
-                                       placeholder="Rechercher un étudiant par nom..."
-                                       value="${recherche}">
-                                <button class="btn btn-primary" type="submit">
-                                    Rechercher
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <a href="${pageContext.request.contextPath}/etudiants?action=ajouter"
-                           class="btn btn-primary btn-lg w-100 w-md-auto">
-                            <i class="bi bi-plus-circle me-2"></i>Ajouter un étudiant
-                        </a>
-                    </div>
+                <div class="d-flex justify-content-end">
+                    <a href="${pageContext.request.contextPath}/etudiants?action=ajouter"
+                       class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Ajouter un étudiant
+                    </a>
                 </div>
             </div>
         </div>
@@ -142,7 +148,7 @@
                 <c:choose>
                     <c:when test="${not empty etudiants}">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table id="etudiantsTable" class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th><i class="bi bi-hash me-1"></i>N° Étudiant</th>
@@ -222,5 +228,122 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Check if table exists
+            if ($('#etudiantsTable').length) {
+                $('#etudiantsTable').DataTable({
+                    // Pagination
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Tous"]],
+
+                    // Language - French
+                    language: {
+                        "sProcessing":     "Traitement en cours...",
+                        "sSearch":         "Rechercher&nbsp;:",
+                        "sLengthMenu":     "Afficher _MENU_ &eacute;tudiants",
+                        "sInfo":           "Affichage de _START_ &agrave; _END_ sur _TOTAL_ &eacute;tudiants",
+                        "sInfoEmpty":      "Affichage de 0 &agrave; 0 sur 0 &eacute;tudiant",
+                        "sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;tudiants au total)",
+                        "sInfoPostFix":    "",
+                        "sLoadingRecords": "Chargement en cours...",
+                        "sZeroRecords":    "Aucun &eacute;tudiant &agrave; afficher",
+                        "sEmptyTable":     "Aucune donn&eacute;e disponible",
+                        "oPaginate": {
+                            "sFirst":      "Premier",
+                            "sPrevious":   "Pr&eacute;c&eacute;dent",
+                            "sNext":       "Suivant",
+                            "sLast":       "Dernier"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": activer pour trier la colonne par ordre croissant",
+                            "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
+                        },
+                        "select": {
+                            "rows": {
+                                "_": "%d lignes séléctionnées",
+                                "0": "Aucune ligne séléctionnée",
+                                "1": "1 ligne séléctionnée"
+                            }
+                        }
+                    },
+
+                    // Buttons for export
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                         '<"row"<"col-sm-12"B>>' +
+                         '<"row"<"col-sm-12"tr>>' +
+                         '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            text: '<i class="bi bi-clipboard me-1"></i> Copier',
+                            className: 'btn-sm'
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel',
+                            className: 'btn-sm',
+                            title: 'Liste des Étudiants - IUA',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4]
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF',
+                            className: 'btn-sm',
+                            title: 'Liste des Étudiants - IUA',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4]
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            text: '<i class="bi bi-printer me-1"></i> Imprimer',
+                            className: 'btn-sm',
+                            title: 'Liste des Étudiants',
+                            messageTop: '<h3>Master 1 GI/MIAGE - Institut Universitaire d\'Abidjan (IUA)</h3>',
+                            exportOptions: {
+                                columns: [0, 1, 2, 3, 4]
+                            }
+                        }
+                    ],
+
+                    // Column definitions
+                    columnDefs: [
+                        {
+                            targets: 5, // Actions column
+                            orderable: false,
+                            searchable: false
+                        }
+                    ],
+
+                    // Order by student name by default
+                    order: [[1, 'asc']],
+
+                    // Responsive
+                    responsive: true
+                });
+            }
+        });
+    </script>
 </body>
 </html>
